@@ -2,8 +2,8 @@ import React, {Component, Fragment} from "react";
 import { Link } from "react-router-dom";
 import { connect } from 'react-redux';
 import {increment_count, decrement_count} from '../../redux/counter';
-import { set_imglink } from '../../redux/imglink';
-import parse from 'html-react-parser';
+// import { set_imglink } from '../../redux/imglink';
+// import parse from 'html-react-parser';
 import Attributes from "./Attributes";
 // import { setShopCartLocalStorage } from "./setLocalStorage";
 import {setDefaultAttributes} from '../../utilities/handleAttributes';
@@ -25,19 +25,20 @@ class Detailes extends Component {
     
     setShopCartLocalStorage() {
         const data = this.props.data
-    if (data.product.attributes === undefined) {
+    if (data.attributes === undefined) {
             return null
         }
         
         // const attributes = setDefaultAttributes(data.product.attributes);
         
         const Object = {
-            name: data.product?.name,
-            id: data.product?.id,
-            brand: data.product?.brand,
-            price: data.product?.prices,
-            attributes: setDefaultAttributes(data.product.attributes),
-            photo: data.product?.gallery,
+            
+            name: data.name,
+            id: data.id,
+            brand: data.brand,
+            prices: data.prices,
+            attributes: setDefaultAttributes(data.attributes),
+            photo: data.gallery,
             items_count: 1,
             
             
@@ -85,17 +86,17 @@ class Detailes extends Component {
     render() {
         
         const data = this.props.data;
-        if (data.product === undefined) {
-            return null;
-        } 
+        if (data=== undefined) {
+        return null    
+         } 
         return (
 
             <DetailesContainer>
                 <ProductBrand>
-                   {data.product.brand}
+                   {data.brand}
                 </ProductBrand>
                 <ProductName>
-                    {data.product.name}
+                    {data.name}
                 </ProductName>
                 <AttributesContainer>
                     <Attributes />
@@ -105,8 +106,8 @@ class Detailes extends Component {
                         Price
                     </PriceName>
                     <PriceAmount>
-                        {data.product.prices[this.props.index].currency.symbol}
-                        {data.product.prices[this.props.index].amount}
+                        {data.prices[this.props.index].currency.symbol}
+                        {data.prices[this.props.index].amount}
                     </PriceAmount>
                 </ProductPriceContainer>
                 <ButtonContainer>
@@ -114,7 +115,7 @@ class Detailes extends Component {
                     { this.setShopCartLocalStorage(); this.props.increment_count() }} >
                       ADD TO CART
                     </ButtonToCart>
-                    <ButtonDisabled instock={data.product.inStock}>
+                    <ButtonDisabled instock={data.inStock}>
                             OUT OF STOCK
                         </ButtonDisabled>
                 </ButtonContainer>    
@@ -124,7 +125,7 @@ class Detailes extends Component {
                     </Link>
                 
                 <ProductDescription>
-                         <Interweave content={data.product.description}/>            
+                         <Interweave content={data.description}/>            
                 </ProductDescription>
             </DetailesContainer>
         )

@@ -1,0 +1,20 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /categories/{document=**} {
+      allow read;
+    }
+    match /tech/{document=**} {
+      allow read;
+    }
+    match /clothes/{document=**} {
+      allow read;
+    }
+    match /currencies/{document=**} {
+      allow read;
+    }
+    match /product/{document=**} {
+      allow read;
+    }
+  }
+}

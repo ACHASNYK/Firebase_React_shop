@@ -8,6 +8,7 @@ import Detailes from "./Detailes";
 import { set_detailes } from '../../redux/detail_data';
 import { loadFromLocalStorage } from '../../utilities/loadFromLocalStorage'
 import styled from "styled-components";
+import { projFirestore } from '../../firebase/config';
 
 class ProductDetailPage extends Component {
     constructor(props) {
@@ -23,18 +24,27 @@ class ProductDetailPage extends Component {
     }        
     
     componentDidMount() {
-        
-    const query_variable = {
+        console.log('didmount')
+    // const query_variable = {
             
-            "productId": `${this.props.product_id? this.props.product_id : this.getID()}`
+        //     "productId": `${this.props.product_id? this.props.product_id : this.getID()}`
 
+        // }
+        let query_name = this.props.product_id ? this.props.product_id : this.getID();
+        console.log(query_name);
+        let category = this.props.category ? this.props.category : JSON.parse(sessionStorage.getItem('category')) ? this.props.initial : 'product';
+        if (category === 'all') {
+            category='product'
         }
-    client.query({ query: productById, variables: query_variable })
-        .then(result => {
+        console.log(category);
+        projFirestore.collection(category).doc(query_name).get()
+            .then(shot => {
+                let result = shot.data();
+                console.log(result)
             this.setState({
-                data: result.data,
+                data: result,
                 dataIsLoaded: true
-            });this.props.set_detailes(result.data)
+            }); this.props.set_detailes(result); console.log(result)
           });
            
        
@@ -55,22 +65,21 @@ class ProductDetailPage extends Component {
 
            
       displayImgList() {
-        
-             const { data, dataIsLoaded } = this.state;
-             
-             console.log(data)
-             if (!dataIsLoaded) {
-                 return (<div>Loading...</div>)
+          try {
+              const { data, dataIsLoaded } = this.state;
+              if (data === undefined || !dataIsLoaded) {
+                  return (<div>Loading...</div>);
               } else {
-                 return data.product.gallery.map((items, i) => {
-                     return (<SmallImg key={i}
+                  return data.gallery.map((items, i) => {
+                      return (<SmallImg key={i}
                                           
-                         photo={items}
+                          photo={items}
                        
                         
-                     />);
-                 });
-             }
+                      />);
+                  });
+              }
+          } catch (e) { console.log(e) };    
                 
     }
 
@@ -78,32 +87,37 @@ class ProductDetailPage extends Component {
     getID() {
         const Object = loadFromLocalStorage();
         console.log(Object);
-        return Object.id;
+        return Object.fid;
     }
     
 
 
     render() {
-                
-        return (
+        try {
+            const { data, dataIsLoaded } = this.state;
+            if (data===undefined||!dataIsLoaded) {
+                return (<div>Loading...</div>);
+            }
+            return (
               
-            <ImagesBlock>
+                <ImagesBlock>
 
-                <PhotoListContainer>    
-                    <PhotoList>
-                         {this.displayImgList() } 
-                    </PhotoList>
-                </PhotoListContainer>
-                <BigImageContainer>
-                    <BigImg img={this.props.photo}/>
-                </BigImageContainer>
-                <DetailesContainer>
+                    <PhotoListContainer>
+                        <PhotoList>
+                            {this.displayImgList()}
+                        </PhotoList>
+                    </PhotoListContainer>
+                    <BigImageContainer>
+                        <BigImg img={this.props.photo} />
+                    </BigImageContainer>
+                    <DetailesContainer>
                    
-                    <Detailes />
+                        <Detailes />
                     
-                </DetailesContainer>
-            </ImagesBlock>
-        )
+                    </DetailesContainer>
+                </ImagesBlock>
+            )
+        } catch (e) { console.log(e)}    
     }
 }
 
@@ -143,7 +157,11 @@ const mapStateToProps = state => {
     if (!state) {
         return (console.log("error"))
     }else{
-        return { product_id: state.productid.value, }
+        return {
+            product_id: state.productid.value,
+            category: state.category.value,
+            initial: state.swatchid.value
+        }
     }
 };
 const mapDispatchToProps = { set_detailes };

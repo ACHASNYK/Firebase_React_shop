@@ -29,7 +29,7 @@ class BigCartItemsList extends Component {
                                 <Name>{this.props.name}</Name>
                             </BigCartItDetName>
                             <BigCartItDetAmount>
-                            {this.props.price[this.props.index].currency.symbol}  {this.props.price[this.props.index].amount}
+                            {this.props.prices[this.props.index].currency.symbol}  {this.props.prices[this.props.index].amount}
                             </BigCartItDetAmount>
                         </BigCartItDetTitle>
                         <BigCartAttrContainer>

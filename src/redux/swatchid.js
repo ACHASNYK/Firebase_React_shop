@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 export const swatchSlice = createSlice({
     name: "swatchid",
     initialState: {
-        value: '',
+        value: [],
     },
     reducers: {
         set_swatchid: (state, action) => {

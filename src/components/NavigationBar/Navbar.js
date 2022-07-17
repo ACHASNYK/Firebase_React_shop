@@ -1,14 +1,15 @@
 import React, {Component} from "react";
-import { allCatQuery } from "../../queries/query";
+// import { allCatQuery } from "../../queries/query";
 import HeaderButton from './HeaderButton';
 import CurrSelector from "./CurrSelector";
-import { client } from "../../App";
+// import { client } from "../../App";
 import Modal from "./Modal";
 import {set_swatchid} from '../../redux/swatchid'
 import CartDisplayButton from "./CartDisplayButton";
 import styled from "styled-components";
 import { ReactComponent as ShopLogo } from '../icons/shop.svg'
 import { connect } from 'react-redux';
+import {projFirestore } from '../../firebase/config'
 
 class Navbar extends Component {
     constructor(props) {
@@ -20,14 +21,33 @@ class Navbar extends Component {
     }
 
   componentDidMount() {
-        client.query({ query: allCatQuery })
-      .then(result => {
-        this.setState({
-          data: result.data,
+
+    projFirestore.collection('categories').get().then((snapshot) => { 
+      if (snapshot.empty) {
+        return <div>erorr</div>
+      } else {
+        console.log(snapshot.docs)
+        let result = snapshot.docs[0].data();
+        result && this.props.set_swatchid(result.categories[0]);
+        result && this.setState({
+          data: result.categories,
           DataIsLoaded: true,
-          modal: this.props.modal
-        }); set_swatchid(result.data.categories[0].name);
-      });
+        });
+        
+        // snapshot.docs.forEach(doc => result.push({ ...doc.data() }));
+         
+
+      };
+    })
+
+      //   client.query({ query: allCatQuery })
+      // .then(result => {
+      //   this.setState({
+      //     data: result.data,
+      //     DataIsLoaded: true,
+      //     modal: this.props.modal
+      //   }); set_swatchid(result.data.categories[0].name);
+      // });
     }
 
     displayList(){
@@ -35,13 +55,14 @@ class Navbar extends Component {
      
         if(!DataIsLoaded) {
             return(<div>Loading...</div>)
-        }else{ 
-          return data.categories.map((items, i) => {
+        } else {
+          
+          return data.map((items, i) => {
                         
             return ( <HeaderButton 
                     key={i}
-                    name = {items.name}
-                    link = {items.name}
+                    name = {items}
+                    link = {items}
                     />);
                 
             })
@@ -52,6 +73,8 @@ class Navbar extends Component {
     
     render() {
       document.body.style.overflowY = "hidden";
+      
+     this.props.set_swatchid(this.state.data[0])
       return (
         <NavbarMain modal={ this.props.modal} >
          <ButtonGroup>            
@@ -117,5 +140,6 @@ const mapStateToProps = state => {
   }
   
 }
+const mapDispatchToProps = {set_swatchid}
 
-export default connect(mapStateToProps, null)(Navbar);
+export default connect(mapStateToProps, mapDispatchToProps)(Navbar);

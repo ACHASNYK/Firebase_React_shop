@@ -1,10 +1,11 @@
 import React, {Component} from "react";
 import Card from "./Card";
-import { client } from "../../App";
+// import { client } from "../../App";
 import { connect } from "react-redux";
-import { allProducts } from "../../queries/query";
+// import { allProducts } from "../../queries/query";
 import Title from './Title';
 import styled from "styled-components";
+import { projFirestore } from '../../firebase/config';
 
 
 class Main extends Component {
@@ -12,30 +13,48 @@ class Main extends Component {
         super(props);
         
         this.state = {
-            data: {},
+            data: [],
             DataIsLoaded: false,
         }
     }              
-         
+    
        
      
     
     componentDidMount() {
-        const query_variable = {
-            "input": {
-            "title": `${this.props.cat_name? this.props.cat_name : this.loadFromLocalStorage()? this.loadFromLocalStorage(): this.props.initial_cat_name}`
-            }
-        }
+        // const query_variable = {
+            // "input": {
+            // "title": `${this.props.cat_name? this.props.cat_name : this.loadFromLocalStorage()? this.loadFromLocalStorage(): this.props.initial_cat_name}`
+            // }
+        // }
         
-        client.query({ query: allProducts, variables: query_variable })
-            .then(result => {
-            this.setState({
-                data: result.data,
-                DataIsLoaded: true
-            })
+        let query_name = this.props.cat_name ? this.props.cat_name : this.loadFromLocalStorage() ? this.loadFromLocalStorage() : this.props.initial? this.props.initial: 'product';
+            if (query_name === 'all') {
+                query_name = 'product'
+            }
+            console.log(query_name)
+    
+        // client.query({ query: allProducts, variables: query_variable })
+        //     .then(result => {
+        //     this.setState({
+        //         data: result.data,
+        //         DataIsLoaded: true
+        //     })
                 
-        });
-
+        // });
+        projFirestore.collection(query_name).get().then((shot) => {
+            if (shot.empty) {
+                return 'error'
+            }
+            let result = [];
+            
+            shot.docs.map(doc => result.push({...doc.data(), fid: doc.id }));
+            this.setState({
+                data: result,
+                DataIsLoaded: true
+            });
+        })
+        
     }
     
     
@@ -60,15 +79,15 @@ class Main extends Component {
                 return (<div>Loading...</div>)
             } else {
                
-                return data.category.products.map((items, i) => {
+                return data.map((items, i) => {
                     return (<div className="card_list" key={i}><Card
-                    
+                        fid={items.fid }
                         item_key={items.id}
                         photo={items.gallery}
                         name={items.name}
                         brand={items.brand}
                         attributes={items.attributes}
-                        price={items.prices}
+                        prices={items.prices}
                         instock={items.inStock}
                     /></div>); 
                 })
@@ -131,7 +150,7 @@ const mapStateToProps = state => {
         return {
             cat_name: state.category.value,
             index: state.currencyid.value,
-            initial_cat_name: state.swatchid.value
+            initial: state.swatchid.value
             
         }
     }

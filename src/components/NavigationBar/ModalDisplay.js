@@ -15,6 +15,7 @@ class ModalDisplay extends Component {
         this.state = {
             data: [],
             counter: 0,
+            dataIsloaded: false,
         }
         this.itemRef = React.createRef();
     }
@@ -53,27 +54,28 @@ class ModalDisplay extends Component {
     }
 
     displayItemsList() {
-        const data = this.state.data;
-        
-        if (data===undefined) {
-            return ("Loading...")
-        }
-        return data.map((e, i) => {
+        const { data, dataIsloaded } = this.state;
+        try {
+            if (data === undefined || !dataIsloaded) {
+                return (<div>Loading...</div>)
+            }
+            return data?.map((e, i) => {
             
-            return (<CartItemsList
-                key={i}
-                id={e.id}
-                brand={e.brand}
-                name={e.name}
-                prices={e.price}
-                attributes={e.attributes}
-                choices={e.choices}
-                photo={e.photo}
-                items={e.items_count}
-                incrementItemsCount={this.incrementItemsCount}
-                decrementItemsCount={ this.decrementItemsCount}
-            />)
-        })
+                return (<CartItemsList
+                    key={i}
+                    id={e.id}
+                    brand={e.brand}
+                    name={e.name}
+                    prices={e.prices}
+                    attributes={e.attributes}
+                    choices={e.choices}
+                    photo={e.photo}
+                    items={e.items_count}
+                    incrementItemsCount={this.incrementItemsCount}
+                    decrementItemsCount={this.decrementItemsCount}
+                />)
+            })
+        } catch (e) { console.log(e)}
     }
 
     handleCLickOutside = () => {
@@ -98,7 +100,8 @@ class ModalDisplay extends Component {
             
         this.setState({
             data: JSON.parse(sessionStorage.getItem('shopping_cart')) || [],
-            counter: sessionStorage.getItem('counter') || 0
+            counter: sessionStorage.getItem('counter') || 0,
+            dataIsloaded: true,
         });
         
         document.addEventListener("click", this.handleCLickOutside, true); console.log('rendered');

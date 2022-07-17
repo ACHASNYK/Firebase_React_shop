@@ -19,7 +19,7 @@ class Attributes extends Component {
                 return obj;                
         });
         
-        const storage = { ...this.props?.data, product: { ...this.props?.data?.product, attributes: newData } }
+        const storage = { ...this.props?.data, attributes: newData } 
       
         this.props.set_detailes(storage);
     }
@@ -29,7 +29,7 @@ class Attributes extends Component {
     
     
     render() {
-        const data = setDefaultAttributes(this.props.data.product.attributes)
+        const data = setDefaultAttributes(this.props?.data?.attributes)
         return (<AttributesContainer>
             {data?.map((element, i) => {
                 if (element.type === "swatch") {

@@ -4,10 +4,12 @@ import { connect } from 'react-redux';
 import { set_productid } from '../../redux/productid';
 import { set_imglink } from '../../redux/imglink';
 import { set_modal } from '../../redux/modal';
+// import { set_detailes } from '../../redux/detail_data';
 import {increment_count} from '../../redux/counter';
 import { setDefaultAttributes } from '../../utilities/handleAttributes';
 import { ReactComponent as CircleIcon } from '../icons/circle.svg';
 import styled, { keyframes } from "styled-components";
+
 
 
 
@@ -23,10 +25,11 @@ class Card extends Component {
         }
         // const attributes = setDefaultAttributes(this.props.attributes)
         const Object = {
+            
             name: this.props.name,
             id: this.props.item_key,
             brand: this.props.brand,
-            price: this.props.price,
+            prices: this.props.prices,
             attributes: setDefaultAttributes(this.props.attributes),
             photo: this.props.photo,
             items_count: 1,      
@@ -69,10 +72,11 @@ class Card extends Component {
     saveToLocalStorage() {
         
         const Object = {
+            fid: this.props.fid,
             name: this.props.name,
             id: this.props.item_key,
             brand: this.props.brand,
-            price: this.props.price,
+            prices: this.props.prices,
             attributes: this.props.attributes,
             photo: this.props.photo,
             items_count: 1,
@@ -81,23 +85,23 @@ class Card extends Component {
 
                  
         }
-            try {
-                const serialisedState = JSON.stringify(Object);
-                sessionStorage.setItem("detailes", serialisedState);
+           
+        const serialisedState = JSON.stringify(Object);
+        
+        return sessionStorage.setItem("detailes", serialisedState);
                 
-        } catch (e) {
-            console.warn(e);
-        }
+        
+        
         
     }
 
 
    
     render() {
-        
-        const data = this.props.price[this.props.index];
+        // console.log(this.props.fid)
+        const data = this.props.prices[this.props.index];
         // const index = this.props.index;
-        if (this.props.price === undefined) {
+        if (this.props.prices === undefined) {
               return null;
         }
         
@@ -109,9 +113,9 @@ class Card extends Component {
                 <CardContainer>
                     <Link to="/pdp" className="router_links">
                         <BannerOutofStock onClick={() => {
-                    this.props.set_productid(this.props.item_key);
+                            this.props.set_productid(this.props.fid);
                     this.props.set_imglink(this.props.photo[0]);
-                        this.saveToLocalStorage();               
+                            this.saveToLocalStorage();               
                     }}instock={this.props.instock}>
                             <Text>OUT OF STOCK</Text>
                         </BannerOutofStock>
@@ -128,9 +132,9 @@ class Card extends Component {
                     <Image >
                      <Link to="/pdp" className="router_links">       
                         <Photo  onClick={() => {
-                    this.props.set_productid(this.props.item_key);
+                    this.props.set_productid(this.props.fid);
                     this.props.set_imglink(this.props.photo[0]);
-                        this.saveToLocalStorage(); 
+                        this.saveToLocalStorage();
                         
                     
                 }}alt="product_img" src={this.props.photo[0]}/>

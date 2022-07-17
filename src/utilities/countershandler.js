@@ -39,9 +39,9 @@ export const totalAmount = (source, index) => {
         let symbol = ''
         let amount = 0
         data.map(e => {
-            price.push(e.price[index]?.amount);
+            price.push(e.prices[index]?.amount);
             count.push(e.items_count);
-            symbol = e.price[index]?.currency.symbol;
+            symbol = e.prices[index]?.currency.symbol;
         })
         console.log(price, count)
         for (let i = 0; i < price.length; ++i){

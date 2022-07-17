@@ -1,9 +1,10 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { set_currencyid } from "../../redux/currency";
-import { client } from '../../App';
+// import { client } from '../../App';
 import { currency } from '../../queries/query';
 import styled from 'styled-components';
+import { projFirestore } from '../../firebase/config';
 
 
 
@@ -40,8 +41,12 @@ class CurrSelector extends Component {
 
         
     componentDidMount() {        
-        client.query({ query: currency})
-            .then(result => {
+        projFirestore.collection('currencies').get()
+            .then(shot => {
+                if (shot.empty) {
+                    return "error"
+                }
+                let result = shot.docs[0].data();
                 this.setState({
                     data: result.data,
                     DataIsLoaded: true

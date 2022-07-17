@@ -32,7 +32,7 @@ class ShopCart extends Component {
                 id={e.id}
                 brand={e.brand}
                 name={e.name}
-                price={e.price}
+                prices={e.prices}
                 attributes={e.attributes}
                 choices={e.choices}
                 photo={e.photo}
